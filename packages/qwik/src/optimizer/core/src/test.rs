@@ -268,6 +268,77 @@ export const ImporterButton = component$<PropsOf<"button">>(({ onClick$ }) => {
 }
 
 #[test]
+fn example_conditional_jsx2() {
+	test_input!(TestInput {
+		code: r#"
+import {
+	$,
+	component$,
+	useSignal,
+} from "@qwik.dev/core";
+import { Child } from "./child";
+
+export const TestButton = component$(() => {
+	const counter = useSignal(0);
+
+	const handleClick$ = $(() => {
+		counter.value++;
+	});
+
+	return (
+		<>
+		<button
+			onClick$={() => {
+				counter.value++;
+			}}
+		>
+			click me
+		</button>
+		<br />
+		{counter.value > 1 && counter.value < 50 ? <div>condition true</div> : <div>condition false</div>}
+		<Child handleClick$={handleClick$} />
+		</>
+	);
+});
+"#
+		.to_string(),
+		transpile_ts: true,
+		transpile_jsx: true,
+		..TestInput::default()
+	});
+}
+
+#[test]
+fn example_conditional_jsx_handleClick() {
+	test_input!(TestInput {
+		code: r#"
+import {
+	$,
+	component$,
+	QRL,
+	useSignal,
+} from "@qwik.dev/core";
+
+export const Child = component$(({ handleClick$ }: { handleClick$: QRL<() => void> }) => {
+	return (
+		<>
+		<button
+			onClick$={handleClick$}
+		>
+			child button
+		</button>
+		</>
+	);
+});
+"#
+		.to_string(),
+		transpile_ts: true,
+		transpile_jsx: true,
+		..TestInput::default()
+	});
+}
+
+#[test]
 fn example_increment() {
 	test_input!(TestInput {
 		code: r#"
